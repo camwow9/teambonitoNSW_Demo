@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Team Bonito Fishing 🐟</title>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Oswald:wght@400;700&family=Bebas+Neue&family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ocean: #0077B6;
+    --deep: #03045E;
+    --wave: #00B4D8;
+    --foam: #90E0EF;
+    --sun: #FFD166;
+    --coral: #EF233C;
+    --lime: #8AC926;
+    --sand: #FFF3B0;
+    --dark: #0a0a1a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Roboto Condensed', sans-serif;
+    background: var(--dark);
+    color: #fff;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* CUSTOM CURSOR */
+  .cursor {
+    width: 20px; height: 20px;
+    border: 2px solid var(--sun);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.1s, background 0.1s;
+    transform: translate(-50%, -50%);
+  }
+  .cursor.clicked { transform: translate(-50%,-50%) scale(1.8); background: rgba(255,209,102,0.3); }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; width: 100%; z-index: 1000;
+    background: rgba(3,4,94,0.92);
+    backdrop-filter: blur(10px);
+    border-bottom: 3px solid var(--sun);
+    padding: 0 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 64px;
+  }
+  .nav-logo {
+    font-family: 'Bangers', cursive;
+    font-size: 2rem;
+    color: var(--sun);
+    letter-spacing: 2px;
+    text-decoration: none;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .nav-logo .fish-icon { font-size: 1.8rem; animation: swim 2s ease-in-out infinite; display: inline-block; }
+  @keyframes swim {
+    0%,100% { transform: translateX(0) rotate(0deg); }
+    50% { transform: translateX(8px) rotate(3deg); }
+  }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a {
+    color: #fff; text-decoration: none; font-family: 'Oswald', sans-serif;
+    font-size: 1rem; letter-spacing: 1px; text-transform: uppercase;
+    transition: color 0.2s;
+    position: relative;
+  }
+  .nav-links a::after {
+    content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px;
+    background: var(--sun); transition: width 0.3s;
+  }
+  .nav-links a:hover { color: var(--sun); }
+  .nav-links a:hover::after { width: 100%; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    background: linear-gradient(170deg, #000814 0%, #001f3f 40%, #0077b6 80%, #00b4d8 100%);
+    display: flex; align-items: center; justify-content: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    padding-top: 64px;
+  }
+
+  .waves-bg {
+    position: absolute; bottom: 0; left: 0; width: 100%; pointer-events: none;
+  }
+  .wave-svg { width: 100%; height: 180px; }
+
+  .bubbles { position: absolute; width: 100%; height: 100%; pointer-events: none; }
+  .bubble {
+    position: absolute; border-radius: 50%;
+    background: rgba(144,224,239,0.15);
+    border: 1px solid rgba(144,224,239,0.3);
+    animation: rise linear infinite;
+  }
+  @keyframes rise {
+    0% { transform: translateY(100vh) scale(0); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 0.3; }
+    100% { transform: translateY(-20px) scale(1); opacity: 0; }
+  }
+
+  .hero-content { position: relative; z-index: 2; }
+  .hero-eyebrow {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.1rem; letter-spacing: 6px; color: var(--wave);
+    text-transform: uppercase; margin-bottom: 1rem;
+    animation: fadeUp 0.8s ease both;
+  }
+  .hero-title {
+    font-family: 'Bangers', cursive;
+    font-size: clamp(4rem, 12vw, 9rem);
+    line-height: 0.9;
+    color: var(--sun);
+    text-shadow: 0 0 40px rgba(255,209,102,0.4), 4px 4px 0 var(--deep);
+    animation: fadeUp 0.8s ease 0.15s both;
+    letter-spacing: 4px;
+  }
+  .hero-title span { color: #fff; }
+  .hero-sub {
+    font-family: 'Oswald', sans-serif;
+    font-size: clamp(1.2rem, 3vw, 2rem);
+    color: var(--foam);
+    margin: 1rem 0 2.5rem;
+    letter-spacing: 3px;
+    animation: fadeUp 0.8s ease 0.3s both;
+  }
+  .hero-fish-big {
+    font-size: clamp(5rem, 15vw, 10rem);
+    animation: heroFish 3s ease-in-out infinite, fadeUp 0.8s ease 0.45s both;
+    display: block; margin: 0 auto 1.5rem;
+    filter: drop-shadow(0 0 30px rgba(0,180,216,0.6));
+  }
+  @keyframes heroFish {
+    0%,100% { transform: translateY(0) scaleX(1); }
+    25% { transform: translateY(-15px) scaleX(1.05); }
+    75% { transform: translateY(10px) scaleX(0.95); }
+  }
+  .hero-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; animation: fadeUp 0.8s ease 0.6s both; }
+  .btn {
+    font-family: 'Oswald', sans-serif; font-size: 1.1rem; letter-spacing: 2px;
+    padding: 0.8rem 2.5rem; border-radius: 4px; text-decoration: none;
+    text-transform: uppercase; cursor: pointer; border: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: inline-block;
+  }
+  .btn:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
+  .btn-primary { background: var(--coral); color: #fff; }
+  .btn-outline { background: transparent; color: var(--sun); border: 2px solid var(--sun); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* SECTIONS */
+  section { padding: 5rem 2rem; }
+  .section-title {
+    font-family: 'Bangers', cursive;
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    letter-spacing: 3px;
+    text-align: center;
+    margin-bottom: 0.5rem;
+  }
+  .section-line {
+    width: 80px; height: 4px; margin: 0 auto 3rem;
+    border-radius: 2px;
+  }
+
+  /* ABOUT BONITO */
+  .about { background: #050a20; }
+  .section-title.ocean { color: var(--wave); }
+  .section-line.ocean { background: var(--wave); }
+
+  .about-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; max-width: 1100px; margin: 0 auto;
+    align-items: center;
+  }
+  .fish-showcase {
+    text-align: center; position: relative;
+  }
+  .fish-3d {
+    font-size: clamp(6rem, 14vw, 11rem);
+    display: block;
+    animation: floatFish 4s ease-in-out infinite;
+    filter: drop-shadow(0 10px 40px rgba(0,180,216,0.5));
+  }
+  @keyframes floatFish {
+    0%,100% { transform: translateY(0) rotate(-3deg); }
+    50% { transform: translateY(-20px) rotate(3deg); }
+  }
+  .fish-label {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 1.4rem; letter-spacing: 4px; color: var(--sun);
+    margin-top: 0.5rem;
+  }
+  .about-facts { }
+  .fact-card {
+    background: rgba(0,119,182,0.15);
+    border: 1px solid rgba(0,180,216,0.3);
+    border-left: 4px solid var(--wave);
+    padding: 1.2rem 1.5rem;
+    margin-bottom: 1rem;
+    border-radius: 0 8px 8px 0;
+    transition: background 0.3s, transform 0.2s;
+  }
+  .fact-card:hover { background: rgba(0,119,182,0.3); transform: translateX(6px); }
+  .fact-icon { font-size: 1.5rem; margin-bottom: 0.3rem; }
+  .fact-title { font-family: 'Oswald', sans-serif; font-size: 1.1rem; color: var(--sun); margin-bottom: 0.3rem; letter-spacing: 1px; }
+  .fact-text { font-size: 0.95rem; color: #cce; line-height: 1.5; }
+
+  /* SPECIES STATS */
+  .stats-bar { background: var(--coral); padding: 2.5rem 2rem; }
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); max-width: 900px; margin: 0 auto; gap: 1rem; text-align: center; }
+  .stat-num { font-family: 'Bangers', cursive; font-size: 3.5rem; color: #fff; line-height: 1; }
+  .stat-label { font-family: 'Oswald', sans-serif; font-size: 0.9rem; letter-spacing: 2px; color: rgba(255,255,255,0.8); text-transform: uppercase; }
+
+  /* FISHING SPOTS */
+  .spots { background: #02111f; }
+  .section-title.sun { color: var(--sun); }
+  .section-line.sun { background: var(--sun); }
+  .spots-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; max-width: 1100px; margin: 0 auto; }
+  .spot-card {
+    border-radius: 12px; overflow: hidden;
+    background: linear-gradient(135deg, #001f3f, #0077b6);
+    border: 1px solid rgba(0,180,216,0.2);
+    transition: transform 0.3s, box-shadow 0.3s;
+    cursor: pointer;
+  }
+  .spot-card:hover { transform: translateY(-8px); box-shadow: 0 20px 50px rgba(0,119,182,0.4); }
+  .spot-emoji { font-size: 3.5rem; padding: 1.5rem 1.5rem 0.5rem; display: block; }
+  .spot-body { padding: 0 1.5rem 1.5rem; }
+  .spot-name { font-family: 'Bebas Neue', cursive; font-size: 1.6rem; letter-spacing: 3px; color: var(--sun); }
+  .spot-state { font-size: 0.8rem; letter-spacing: 2px; color: var(--wave); text-transform: uppercase; margin-bottom: 0.5rem; }
+  .spot-desc { font-size: 0.9rem; color: #aac; line-height: 1.5; }
+  .spot-tag {
+    display: inline-block; background: rgba(255,209,102,0.15); border: 1px solid rgba(255,209,102,0.4);
+    color: var(--sun); font-size: 0.75rem; padding: 2px 10px; border-radius: 20px; margin-top: 0.7rem; margin-right: 4px;
+  }
+
+  /* TIPS ACCORDION */
+  .tips { background: #040d1e; }
+  .section-title.coral { color: var(--coral); }
+  .section-line.coral { background: var(--coral); }
+  .tips-container { max-width: 750px; margin: 0 auto; }
+  .tip-item {
+    border: 1px solid rgba(239,35,60,0.2);
+    border-radius: 8px; margin-bottom: 0.8rem;
+    overflow: hidden;
+  }
+  .tip-header {
+    padding: 1.1rem 1.5rem;
+    display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer;
+    background: rgba(239,35,60,0.08);
+    transition: background 0.2s;
+    user-select: none;
+  }
+  .tip-header:hover { background: rgba(239,35,60,0.18); }
+  .tip-header-left { display: flex; align-items: center; gap: 12px; }
+  .tip-num { font-family: 'Bangers', cursive; font-size: 1.8rem; color: var(--coral); min-width: 40px; }
+  .tip-title { font-family: 'Oswald', sans-serif; font-size: 1.1rem; letter-spacing: 1px; }
+  .tip-arrow { font-size: 1.2rem; transition: transform 0.3s; color: var(--coral); }
+  .tip-body {
+    max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.3s;
+    padding: 0 1.5rem; font-size: 0.95rem; color: #bbd; line-height: 1.7;
+    background: rgba(0,0,0,0.2);
+  }
+  .tip-body.open { max-height: 300px; padding: 1rem 1.5rem; }
+  .tip-arrow.open { transform: rotate(90deg); }
+
+  /* SOCIAL FEED */
+  .social { background: #020b18; }
+  .section-title.lime { color: var(--lime); }
+  .section-line.lime { background: var(--lime); }
+  .social-header { text-align: center; margin-bottom: 0.5rem; }
+  .social-sub { text-align: center; color: #88a; font-family: 'Oswald', sans-serif; letter-spacing: 2px; font-size: 1rem; margin-bottom: 3rem; }
+  .social-handle { color: var(--lime); }
+
+  .post-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; max-width: 1100px; margin: 0 auto 3rem; }
+  .post-card {
+    background: #0a1628;
+    border: 1px solid rgba(138,201,38,0.15);
+    border-radius: 12px; overflow: hidden;
+    transition: transform 0.3s, border-color 0.3s;
+  }
+  .post-card:hover { transform: translateY(-6px); border-color: rgba(138,201,38,0.5); }
+  .post-img {
+    width: 100%; aspect-ratio: 1/1;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 5rem;
+    position: relative; overflow: hidden;
+  }
+  .post-img-overlay {
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,0.3);
+    display: flex; align-items: flex-end; padding: 0.8rem;
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .post-card:hover .post-img-overlay { opacity: 1; }
+  .post-location { font-family: 'Oswald', sans-serif; font-size: 0.85rem; letter-spacing: 1px; color: #fff; }
+  .post-meta { padding: 0.9rem 1rem; }
+  .post-user { display: flex; align-items: center; gap: 8px; margin-bottom: 0.6rem; }
+  .avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; font-weight: bold; }
+  .post-username { font-family: 'Oswald', sans-serif; font-size: 0.9rem; color: var(--lime); }
+  .post-time { font-size: 0.75rem; color: #556; margin-left: auto; }
+  .post-caption { font-size: 0.85rem; color: #9ab; line-height: 1.5; margin-bottom: 0.8rem; }
+  .post-actions { display: flex; gap: 1.2rem; }
+  .post-action {
+    background: none; border: none; color: #667; font-size: 0.9rem;
+    cursor: pointer; display: flex; align-items: center; gap: 5px;
+    transition: color 0.2s;
+    font-family: 'Roboto Condensed', sans-serif;
+  }
+  .post-action:hover { color: var(--coral); }
+  .post-action.liked { color: var(--coral); }
+
+  /* SHARE YOUR CATCH */
+  .share-form {
+    max-width: 550px; margin: 0 auto;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(138,201,38,0.2);
+    border-radius: 16px; padding: 2rem;
+  }
+  .share-title { font-family: 'Bangers', cursive; font-size: 2rem; letter-spacing: 2px; color: var(--lime); margin-bottom: 1.5rem; text-align: center; }
+  .form-group { margin-bottom: 1rem; }
+  .form-group label { display: block; font-family: 'Oswald', sans-serif; font-size: 0.9rem; letter-spacing: 1px; color: var(--foam); margin-bottom: 0.4rem; }
+  .form-group input, .form-group textarea, .form-group select {
+    width: 100%; padding: 0.7rem 1rem;
+    background: rgba(0,180,216,0.08); border: 1px solid rgba(0,180,216,0.25);
+    border-radius: 6px; color: #fff; font-family: 'Roboto Condensed', sans-serif; font-size: 1rem;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+  .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--lime); }
+  .form-group textarea { height: 80px; resize: vertical; }
+  .form-group select option { background: #020b18; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .btn-submit {
+    width: 100%; padding: 1rem;
+    background: var(--lime); color: #030; border: none;
+    font-family: 'Bangers', cursive; font-size: 1.4rem; letter-spacing: 3px;
+    border-radius: 6px; cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .btn-submit:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(138,201,38,0.3); }
+
+  /* LEADERBOARD */
+  .leaderboard { background: #05111f; padding: 5rem 2rem; }
+  .section-title.wave { color: var(--wave); }
+  .section-line.wave { background: var(--wave); }
+  .lb-table { max-width: 700px; margin: 0 auto; }
+  .lb-row {
+    display: grid; grid-template-columns: 50px 1fr 80px 80px;
+    align-items: center; gap: 1rem;
+    padding: 0.9rem 1.2rem;
+    border-radius: 8px;
+    margin-bottom: 0.6rem;
+    background: rgba(0,119,182,0.1);
+    border: 1px solid rgba(0,180,216,0.1);
+    transition: background 0.2s;
+  }
+  .lb-row:hover { background: rgba(0,119,182,0.25); }
+  .lb-row.top { background: rgba(255,209,102,0.1); border-color: rgba(255,209,102,0.3); }
+  .lb-rank { font-family: 'Bangers', cursive; font-size: 1.6rem; text-align: center; }
+  .lb-rank.gold { color: #FFD700; }
+  .lb-rank.silver { color: #C0C0C0; }
+  .lb-rank.bronze { color: #CD7F32; }
+  .lb-name { font-family: 'Oswald', sans-serif; font-size: 1rem; letter-spacing: 1px; }
+  .lb-location { font-size: 0.8rem; color: #668; }
+  .lb-fish { font-size: 0.9rem; color: var(--wave); text-align: center; }
+  .lb-weight { font-family: 'Bangers', cursive; font-size: 1.3rem; color: var(--sun); text-align: right; }
+
+  /* FOOTER */
+  footer {
+    background: #000814;
+    border-top: 3px solid var(--ocean);
+    padding: 3rem 2rem 2rem;
+    text-align: center;
+  }
+  .footer-logo { font-family: 'Bangers', cursive; font-size: 2.5rem; color: var(--sun); letter-spacing: 3px; margin-bottom: 0.5rem; }
+  .footer-tagline { font-family: 'Oswald', sans-serif; letter-spacing: 3px; font-size: 0.9rem; color: var(--wave); margin-bottom: 2rem; }
+  .footer-links { display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; margin-bottom: 2rem; }
+  .footer-links a { color: #667; text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--sun); }
+  .footer-bottom { color: #334; font-size: 0.8rem; }
+  .footer-bottom span { color: var(--coral); }
+
+  /* SUCCESS MESSAGE */
+  .success-msg {
+    display: none;
+    background: rgba(138,201,38,0.15); border: 1px solid var(--lime);
+    color: var(--lime); padding: 1rem; border-radius: 8px; text-align: center;
+    margin-top: 1rem; font-family: 'Oswald', sans-serif; font-size: 1.1rem; letter-spacing: 1px;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    .about-grid { grid-template-columns: 1fr; }
+    .spots-grid { grid-template-columns: 1fr; }
+    .post-grid { grid-template-columns: 1fr 1fr; }
+    .stats-grid { grid-template-columns: 2fr 2fr; }
+    .nav-links { display: none; }
+    .lb-row { grid-template-columns: 40px 1fr 70px; }
+    .lb-fish { display: none; }
+    .form-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#hero" class="nav-logo">
+    <span class="fish-icon">🐟</span> Team Bonito
+  </a>
+  <ul class="nav-links">
+    <li><a href="#about">The Fish</a></li>
+    <li><a href="#spots">Spots</a></li>
+    <li><a href="#tips">Tips</a></li>
+    <li><a href="#social">Social</a></li>
+    <li><a href="#leaderboard">Leaderboard</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="bubbles" id="bubbles"></div>
+
+  <div class="hero-content">
+    <p class="hero-eyebrow">🇦🇺 Australia's Premier Fishing Community</p>
+    <span class="hero-fish-big">🐟</span>
+    <h1 class="hero-title">TEAM<br><span>BONITO</span></h1>
+    <p class="hero-sub">REEL IT. FEEL IT. BONITO IT.</p>
+    <div class="hero-btns">
+      <a href="#social" class="btn btn-primary">📸 Share Your Catch</a>
+      <a href="#about" class="btn btn-outline">Learn About Bonito</a>
+    </div>
+  </div>
+
+  <div class="waves-bg">
+    <svg class="wave-svg" viewBox="0 0 1440 180" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,80 C240,160 480,0 720,80 C960,160 1200,0 1440,80 L1440,180 L0,180 Z" fill="#050a20" opacity="0.8"/>
+      <path d="M0,110 C360,30 720,170 1080,110 C1260,80 1380,130 1440,120 L1440,180 L0,180 Z" fill="#050a20"/>
+    </svg>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <h2 class="section-title ocean">THE AUSTRALIAN BONITO</h2>
+  <div class="section-line ocean"></div>
+
+  <div class="about-grid">
+    <div class="fish-showcase">
+      <span class="fish-3d">🐟</span>
+      <p class="fish-label">Sarda australis</p>
+      <br>
+      <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:1rem;">
+        <span style="background:rgba(0,180,216,0.2); border:1px solid var(--wave); color:var(--wave); padding:5px 14px; border-radius:20px; font-size:0.85rem;">Eastern Coast</span>
+        <span style="background:rgba(255,209,102,0.15); border:1px solid var(--sun); color:var(--sun); padding:5px 14px; border-radius:20px; font-size:0.85rem;">Pelagic Hunter</span>
+        <span style="background:rgba(239,35,60,0.15); border:1px solid var(--coral); color:var(--coral); padding:5px 14px; border-radius:20px; font-size:0.85rem;">Hard Fighter</span>
+      </div>
+    </div>
+
+    <div class="about-facts">
+      <div class="fact-card">
+        <div class="fact-icon">🌊</div>
+        <div class="fact-title">Native Australian Species</div>
+        <div class="fact-text">The Australian Bonito (Sarda australis) is found along the eastern and south-eastern coastline — from Queensland down through NSW to Victoria. A true blue Aussie fish!</div>
+      </div>
+      <div class="fact-card">
+        <div class="fact-icon">⚡</div>
+        <div class="fact-title">Speed & Power</div>
+        <div class="fact-text">Built for speed with a streamlined, torpedo-shaped body. Bonito are aggressive surface feeders that strike fast and fight hard — perfect for light tackle action.</div>
+      </div>
+      <div class="fact-card">
+        <div class="fact-icon">📏</div>
+        <div class="fact-title">Size & Weight</div>
+        <div class="fact-text">Typically grow to 50–75 cm and 2–5 kg, with some bruisers reaching over 8 kg. School fish often run together in size — find one, find hundreds!</div>
+      </div>
+      <div class="fact-card">
+        <div class="fact-icon">🍽️</div>
+        <div class="fact-title">On The Table</div>
+        <div class="fact-text">Rich, dark red flesh with intense flavour — phenomenal smoked, sashimi-style, or grilled with lemon. Best eaten fresh from the ocean. Bonito is seriously underrated on Australian tables.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stats-grid">
+    <div>
+      <div class="stat-num" data-target="8">0</div>
+      <div class="stat-label">Max Weight (kg)</div>
+    </div>
+    <div>
+      <div class="stat-num" data-target="75">0</div>
+      <div class="stat-label">Max Length (cm)</div>
+    </div>
+    <div>
+      <div class="stat-num" data-target="2400">0</div>
+      <div class="stat-label">Team Members</div>
+    </div>
+    <div>
+      <div class="stat-num" data-target="12800">0</div>
+      <div class="stat-label">Catches Logged</div>
+    </div>
+  </div>
+</div>
+
+<!-- FISHING SPOTS -->
+<section class="spots" id="spots">
+  <h2 class="section-title sun">HOT SPOTS 🎯</h2>
+  <div class="section-line sun"></div>
+
+  <div class="spots-grid">
+    <div class="spot-card">
+      <span class="spot-emoji">⚓</span>
+      <div class="spot-body">
+        <div class="spot-name">Jervis Bay</div>
+        <div class="spot-state">NSW — South Coast</div>
+        <div class="spot-desc">Crystal clear water, spectacular geography and schools of Bonito patrolling from October through April. Best from the headlands and boat in 20–40m.</div>
+        <span class="spot-tag">🛥️ Boat</span>
+        <span class="spot-tag">🎣 Shore</span>
+        <span class="spot-tag">Oct–Apr</span>
+      </div>
+    </div>
+    <div class="spot-card">
+      <span class="spot-emoji">🌅</span>
+      <div class="spot-body">
+        <div class="spot-name">Montague Island</div>
+        <div class="spot-state">NSW — Narooma</div>
+        <div class="spot-desc">World-class pelagic fishing. The nutrient-rich waters bring massive Bonito schools alongside tuna and kingfish. A bucket-list Aussie location.</div>
+        <span class="spot-tag">🛥️ Boat Only</span>
+        <span class="spot-tag">Offshore</span>
+        <span class="spot-tag">Sep–May</span>
+      </div>
+    </div>
+    <div class="spot-card">
+      <span class="spot-emoji">🏖️</span>
+      <div class="spot-body">
+        <div class="spot-name">Noosa Heads</div>
+        <div class="spot-state">QLD — Sunshine Coast</div>
+        <div class="spot-desc">Noosa's points and bays attract Bonito from August. The national park headlands offer epic land-based action when schools push baitfish to the surface.</div>
+        <span class="spot-tag">🎣 Shore</span>
+        <span class="spot-tag">Light Tackle</span>
+        <span class="spot-tag">Aug–Jan</span>
+      </div>
+    </div>
+    <div class="spot-card">
+      <span class="spot-emoji">🦅</span>
+      <div class="spot-body">
+        <div class="spot-name">Port Stephens</div>
+        <div class="spot-state">NSW — Hunter Region</div>
+        <div class="spot-desc">Famous for its dolphins, Port Stephens also delivers cracking Bonito fishing around Broughton Island and the offshore reefs. Deep-water access is easy here.</div>
+        <span class="spot-tag">🛥️ Boat</span>
+        <span class="spot-tag">Offshore</span>
+        <span class="spot-tag">Year Round</span>
+      </div>
+    </div>
+    <div class="spot-card">
+      <span class="spot-emoji">🌊</span>
+      <div class="spot-body">
+        <div class="spot-name">Eden & Twofold Bay</div>
+        <div class="spot-state">NSW — Far South Coast</div>
+        <div class="spot-desc">The orca-famous Eden is also a Bonito haven. Deep canyon water just offshore means pelagics are always close. Run-ins with Bonito schools mid-winter are legendary here.</div>
+        <span class="spot-tag">🛥️ Boat</span>
+        <span class="spot-tag">Canyon</span>
+        <span class="spot-tag">May–Sep</span>
+      </div>
+    </div>
+    <div class="spot-card">
+      <span class="spot-emoji">🐚</span>
+      <div class="spot-body">
+        <div class="spot-name">Mornington Peninsula</div>
+        <div class="spot-state">VIC — Port Phillip Bay</div>
+        <div class="spot-desc">Victoria's best-kept Bonito secret. Schools chase whitebait through the bay in summer. Light spinning gear off the pier or kayak in the bay — exhilarating fun.</div>
+        <span class="spot-tag">🛶 Kayak</span>
+        <span class="spot-tag">🎣 Pier</span>
+        <span class="spot-tag">Nov–Mar</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TIPS ACCORDION -->
+<section class="tips" id="tips">
+  <h2 class="section-title coral">PRO TIPS 💡</h2>
+  <div class="section-line coral"></div>
+
+  <div class="tips-container" id="tipsContainer">
+    <div class="tip-item">
+      <div class="tip-header" onclick="toggleTip(this)">
+        <div class="tip-header-left">
+          <span class="tip-num">01</span>
+          <span class="tip-title">Match the Hatch — Lure Selection</span>
+        </div>
+        <span class="tip-arrow">▶</span>
+      </div>
+      <div class="tip-body">
+        Bonito are sight feeders so matching bait size is critical. Small silver metal slices (15–30g), micro jigs, and hard-body lures in the 60–90mm range work brilliantly. When whitebait is the target prey, go small and chrome. Pilchard-imitating lures in 80–100mm clean up when larger bait is around.
+      </div>
+    </div>
+    <div class="tip-item">
+      <div class="tip-header" onclick="toggleTip(this)">
+        <div class="tip-header-left">
+          <span class="tip-num">02</span>
+          <span class="tip-title">Find the Birds, Find the Bonito</span>
+        </div>
+        <span class="tip-arrow">▶</span>
+      </div>
+      <div class="tip-body">
+        Look for bird activity — gannets diving, shearwaters wheeling — that's a guaranteed sign of baitfish being pushed up from below. Bonito (and tuna) are usually right underneath. Move quickly; schools are fast and won't stay in one spot long. Position upwind/upcurrent of the action.
+      </div>
+    </div>
+    <div class="tip-item">
+      <div class="tip-header" onclick="toggleTip(this)">
+        <div class="tip-header-left">
+          <span class="tip-num">03</span>
+          <span class="tip-title">Light Tackle = Maximum Fun</span>
+        </div>
+        <span class="tip-arrow">▶</span>
+      </div>
+      <div class="tip-body">
+        Bonito are speed demons — a 3 kg fish on 8 lb braid and a 2000-series reel is an absolute riot. Go light and you'll appreciate what a powerful fish the Bonito truly is. A 7–8 ft light spin rod with a fast tip handles the aggressive strikes perfectly. Use 10–15 lb fluorocarbon leader.
+      </div>
+    </div>
+    <div class="tip-item">
+      <div class="tip-header" onclick="toggleTip(this)">
+        <div class="tip-header-left">
+          <span class="tip-num">04</span>
+          <span class="tip-title">Early Morning & Late Arvo Sessions</span>
+        </div>
+        <span class="tip-arrow">▶</span>
+      </div>
+      <div class="tip-body">
+        Bonito feed most actively at low-light periods. The first two hours after sunrise and the last hour before sunset are absolutely prime. They push baitfish to the surface, creating surface explosions that are one of fishing's greatest sights. Get on the water early!
+      </div>
+    </div>
+    <div class="tip-item">
+      <div class="tip-header" onclick="toggleTip(this)">
+        <div class="tip-header-left">
+          <span class="tip-num">05</span>
+          <span class="tip-title">Bleeding & Icing for Table Quality</span>
+        </div>
+        <span class="tip-arrow">▶</span>
+      </div>
+      <div class="tip-body">
+        Bonito flesh deteriorates fast if not handled properly. Bleed the fish immediately by cutting the gills and placing it head-down in a bucket of saltwater for 3–5 minutes. Then ice immediately — a 1:1 slurry of ice and saltwater is ideal. Good handling transforms Bonito from 'okay' to absolutely outstanding table fare.
+      </div>
+    </div>
+    <div class="tip-item">
+      <div class="tip-header" onclick="toggleTip(this)">
+        <div class="tip-header-left">
+          <span class="tip-num">06</span>
+          <span class="tip-title">Trolling Spreads for Covering Ground</span>
+        </div>
+        <span class="tip-arrow">▶</span>
+      </div>
+      <div class="tip-body">
+        When searching for schools, troll a spread of 4–6 lures at 6–8 knots. Run bibbed minnows and pushers in a staggered spread behind the boat. Vary depths with planers or different lure designs. Once you hook up, mark the GPS position and work the area with cast & retrieve for multiple fish.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SOCIAL FEED -->
+<section class="social" id="social">
+  <div class="social-header">
+    <h2 class="section-title lime">THE FEED 📱</h2>
+    <div class="section-line lime"></div>
+    <p class="social-sub">Follow the crew <span class="social-handle">@TeamBonitofishing</span> · Tag us to get featured!</p>
+  </div>
+
+  <div class="post-grid" id="postGrid">
+    <!-- Posts injected by JS -->
+  </div>
+
+  <!-- SHARE FORM -->
+  <div class="share-form" id="shareForm">
+    <div class="share-title">🐟 Share Your Catch!</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Your Name</label>
+        <input type="text" id="userName" placeholder="e.g. Dave M." />
+      </div>
+      <div class="form-group">
+        <label>Location</label>
+        <input type="text" id="userLocation" placeholder="e.g. Jervis Bay NSW" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Fish Weight (kg)</label>
+        <input type="number" id="fishWeight" placeholder="e.g. 3.2" step="0.1" min="0" />
+      </div>
+      <div class="form-group">
+        <label>Lure / Technique</label>
+        <select id="fishTechnique">
+          <option value="">Select method...</option>
+          <option>Metal slice — cast & retrieve</option>
+          <option>Hard body lure</option>
+          <option>Micro jig</option>
+          <option>Trolling</option>
+          <option>Bait fishing</option>
+          <option>Fly fishing</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Caption / Story</label>
+      <textarea id="userCaption" placeholder="Tell us about the catch! How was the fight? What conditions?"></textarea>
+    </div>
+    <button class="btn-submit" onclick="submitPost()">🎣 POST YOUR CATCH!</button>
+    <div class="success-msg" id="successMsg">🐟 Ripper catch! Your post is live in the feed!</div>
+  </div>
+</section>
+
+<!-- LEADERBOARD -->
+<section class="leaderboard" id="leaderboard">
+  <h2 class="section-title wave">LEADERBOARD 🏆</h2>
+  <div class="section-line wave"></div>
+  <p style="text-align:center; color:#668; font-family:'Oswald',sans-serif; letter-spacing:2px; margin-bottom:2rem; font-size:0.9rem;">BIGGEST BONITO — 2025 SEASON</p>
+
+  <div class="lb-table" id="leaderboard">
+    <!-- Injected by JS -->
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">🐟 TEAM BONITO FISHING</div>
+  <div class="footer-tagline">AUSTRALIA'S HOME FOR BONITO FISHING</div>
+  <div class="footer-links">
+    <a href="#about">The Fish</a>
+    <a href="#spots">Hot Spots</a>
+    <a href="#tips">Tips</a>
+    <a href="#social">Social Feed</a>
+    <a href="#leaderboard">Leaderboard</a>
+    <a href="#">Contact</a>
+    <a href="#">Privacy</a>
+  </div>
+  <div class="footer-bottom">
+    &copy; 2025 Team Bonito Fishing. Made with <span>❤️</span> for Australian anglers.<br>
+    <span style="color:#334">🇦🇺 Proudly celebrating Sarda australis — Australia's favourite pelagic fighter</span>
+  </div>
+</footer>
+
+<script>
+// Custom cursor
+const cursor = document.getElementById('cursor');
+document.addEventListener('mousemove', e => {
+  cursor.style.left = e.clientX + 'px';
+  cursor.style.top = e.clientY + 'px';
+});
+document.addEventListener('mousedown', () => cursor.classList.add('clicked'));
+document.addEventListener('mouseup', () => cursor.classList.remove('clicked'));
+
+// Bubbles
+const bubblesEl = document.getElementById('bubbles');
+for (let i = 0; i < 25; i++) {
+  const b = document.createElement('div');
+  b.className = 'bubble';
+  const size = Math.random() * 30 + 8;
+  b.style.cssText = `
+    width:${size}px; height:${size}px;
+    left:${Math.random()*100}%;
+    animation-duration:${Math.random()*8+6}s;
+    animation-delay:${Math.random()*8}s;
+  `;
+  bubblesEl.appendChild(b);
+}
+
+// Counter animation
+function animateCount(el, target) {
+  const duration = 2000;
+  const start = performance.now();
+  function update(now) {
+    const elapsed = now - start;
+    const progress = Math.min(elapsed / duration, 1);
+    const val = Math.round(progress * target);
+    el.textContent = val.toLocaleString();
+    if (progress < 1) requestAnimationFrame(update);
+  }
+  requestAnimationFrame(update);
+}
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      document.querySelectorAll('.stat-num').forEach(el => {
+        animateCount(el, parseInt(el.dataset.target));
+      });
+      observer.disconnect();
+    }
+  });
+}, { threshold: 0.3 });
+const statsBar = document.querySelector('.stats-bar');
+if (statsBar) observer.observe(statsBar);
+
+// Tip accordion
+function toggleTip(header) {
+  const body = header.nextElementSibling;
+  const arrow = header.querySelector('.tip-arrow');
+  const isOpen = body.classList.contains('open');
+  document.querySelectorAll('.tip-body').forEach(b => b.classList.remove('open'));
+  document.querySelectorAll('.tip-arrow').forEach(a => a.classList.remove('open'));
+  if (!isOpen) { body.classList.add('open'); arrow.classList.add('open'); }
+}
+
+// Social Feed Data
+const posts = [
+  { user: 'mick_reelfisher', avatar: '🦈', color: '#0077b6', time: '2h ago', location: 'Jervis Bay, NSW', emoji: '🐟', bg: 'linear-gradient(135deg,#001f3f,#0077b6)', caption: 'Absolute RIPPER session this morning!! School of Bonito turned up just as the sun hit the water. 4 fish in 30 mins on a chrome metal slice. This one went 4.1 kg! 🤙', likes: 142, comments: 23 },
+  { user: 'coastal_kaz', avatar: '🌊', color: '#00b4d8', time: '5h ago', location: 'Montague Island, NSW', emoji: '🎣', bg: 'linear-gradient(135deg,#023e8a,#0096c7)', caption: 'Finally made the trip out to Montague. Offshore was insane — Bonito busting up everywhere. Biggest one was 5.6 kg on a bibbed minnow behind the boat. Recommend this place to EVERYONE.', likes: 289, comments: 41 },
+  { user: 'noosa_nige', avatar: '☀️', color: '#FFD166', time: '1d ago', location: 'Noosa Heads, QLD', emoji: '🏖️', bg: 'linear-gradient(135deg,#1a1a00,#665200)', caption: 'Land-based magic from the headlands! Watched this Bonito chasing bait for 10 mins before it smashed my lure. Crazy aggressive fish. Gin clear water made the whole thing ELECTRIC. 🔥', likes: 198, comments: 35 },
+  { user: 'port_stephen_pete', avatar: '⚓', color: '#ef233c', time: '1d ago', location: 'Port Stephens, NSW', emoji: '🛥️', bg: 'linear-gradient(135deg,#3d0000,#990000)', caption: 'Took the tinnie out early, water temp sitting at 22 degrees. Bonito went ballistic on the micro jigs around Broughton Island. 8 fish between 3 of us — absolute blast!', likes: 176, comments: 19 },
+  { user: 'vicki_casts', avatar: '🌿', color: '#8AC926', time: '2d ago', location: 'Mornington, VIC', emoji: '🐠', bg: 'linear-gradient(135deg,#0a2200,#1a4d00)', caption: 'VIC represent!! Bonito smashing whitebait off the pier at 6am. Sashimi grade — bled it straight away, ate it for lunch. Honestly the best fish I have EVER tasted raw. Get around it!', likes: 234, comments: 52 },
+  { user: 'eden_ed_catches', avatar: '🌀', color: '#9b2226', time: '3d ago', location: 'Eden, NSW', emoji: '🌊', bg: 'linear-gradient(135deg,#03045e,#023e8a)', caption: 'Deep winter Bonito session out of Eden. Canyon water at 18°C brought these bullets in tight. 3 fish over 5 kg — best of the winter season for me. Team Bonito forever! 💪', likes: 311, comments: 67 },
+];
+
+let likes = posts.map(p => p.likes);
+
+function renderPosts() {
+  const grid = document.getElementById('postGrid');
+  grid.innerHTML = posts.map((p, i) => `
+    <div class="post-card">
+      <div class="post-img" style="background:${p.bg}">
+        <span style="font-size:5rem;">${p.emoji}</span>
+        <div class="post-img-overlay">
+          <span class="post-location">📍 ${p.location}</span>
+        </div>
+      </div>
+      <div class="post-meta">
+        <div class="post-user">
+          <div class="avatar" style="background:rgba(255,255,255,0.1); color:${p.color}">${p.avatar}</div>
+          <span class="post-username">@${p.user}</span>
+          <span class="post-time">${p.time}</span>
+        </div>
+        <div class="post-caption">${p.caption}</div>
+        <div class="post-actions">
+          <button class="post-action ${p.liked?'liked':''}" onclick="toggleLike(${i})" id="like-${i}">
+            ${p.liked?'❤️':'🤍'} ${likes[i]}
+          </button>
+          <button class="post-action">💬 ${p.comments}</button>
+          <button class="post-action">📤 Share</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleLike(i) {
+  posts[i].liked = !posts[i].liked;
+  likes[i] += posts[i].liked ? 1 : -1;
+  const btn = document.getElementById(`like-${i}`);
+  btn.innerHTML = `${posts[i].liked?'❤️':'🤍'} ${likes[i]}`;
+  btn.className = 'post-action' + (posts[i].liked ? ' liked' : '');
+}
+
+renderPosts();
+
+// Leaderboard
+const leaders = [
+  { rank: 1, name: 'Mick T.', location: 'Eden, NSW', weight: '8.2 kg', fish: '🐟 x 47' },
+  { rank: 2, name: 'Sarah W.', location: 'Montague, NSW', weight: '7.8 kg', fish: '🐟 x 39' },
+  { rank: 3, name: 'Nige C.', location: 'Noosa, QLD', weight: '7.1 kg', fish: '🐟 x 55' },
+  { rank: 4, name: 'Pete R.', location: 'Port Stephens, NSW', weight: '6.8 kg', fish: '🐟 x 31' },
+  { rank: 5, name: 'Vicki H.', location: 'Mornington, VIC', weight: '6.3 kg', fish: '🐟 x 28' },
+  { rank: 6, name: 'Dave K.', location: 'Jervis Bay, NSW', weight: '5.9 kg', fish: '🐟 x 44' },
+  { rank: 7, name: 'Ed M.', location: 'Eden, NSW', weight: '5.6 kg', fish: '🐟 x 22' },
+];
+const rankClass = ['gold','silver','bronze'];
+const rankMedal = ['🥇','🥈','🥉'];
+
+document.getElementById('leaderboard').innerHTML = leaders.map((l,i) => `
+  <div class="lb-row ${i<3?'top':''}">
+    <div class="lb-rank ${rankClass[i]||''}">${i<3?rankMedal[i]:l.rank}</div>
+    <div><div class="lb-name">${l.name}</div><div class="lb-location">📍 ${l.location}</div></div>
+    <div class="lb-fish">${l.fish}</div>
+    <div class="lb-weight">${l.weight}</div>
+  </div>
+`).join('');
+
+// Submit post
+function submitPost() {
+  const name = document.getElementById('userName').value.trim();
+  const loc = document.getElementById('userLocation').value.trim();
+  const weight = document.getElementById('fishWeight').value;
+  const tech = document.getElementById('fishTechnique').value;
+  const cap = document.getElementById('userCaption').value.trim();
+
+  if (!name || !cap) {
+    alert('Add your name and a caption mate! 🐟');
+    return;
+  }
+
+  const newPost = {
+    user: name.toLowerCase().replace(/\s/g,'_'),
+    avatar: '🎣',
+    color: '#8AC926',
+    time: 'Just now',
+    location: loc || 'Australia',
+    emoji: '🐟',
+    bg: 'linear-gradient(135deg,#0a2200,#1a4d00)',
+    caption: cap + (weight ? ` 🏆 ${weight} kg` : '') + (tech ? ` · Technique: ${tech}` : ''),
+    likes: 0,
+    comments: 0,
+    liked: false
+  };
+
+  posts.unshift(newPost);
+  likes.unshift(0);
+  renderPosts();
+
+  document.getElementById('userName').value = '';
+  document.getElementById('userLocation').value = '';
+  document.getElementById('fishWeight').value = '';
+  document.getElementById('fishTechnique').value = '';
+  document.getElementById('userCaption').value = '';
+
+  const msg = document.getElementById('successMsg');
+  msg.style.display = 'block';
+  setTimeout(() => msg.style.display = 'none', 4000);
+
+  document.getElementById('social').scrollIntoView({ behavior: 'smooth' });
+}
+
+// Scroll reveal
+const revealEls = document.querySelectorAll('.fact-card, .spot-card, .tip-item, .post-card, .lb-row');
+const revealObserver = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.style.opacity = '1';
+      e.target.style.transform = 'translateY(0)';
+    }
+  });
+}, { threshold: 0.1 });
+
+revealEls.forEach(el => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(20px)';
+  el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+  revealObserver.observe(el);
+});
+</script>
+</body>
+</html>
